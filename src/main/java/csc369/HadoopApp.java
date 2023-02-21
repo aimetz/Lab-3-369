@@ -2,20 +2,12 @@ package csc369;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
-
-import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 
 public class HadoopApp {
 
@@ -29,31 +21,33 @@ public class HadoopApp {
 	if (otherArgs.length < 3) {
 	    System.out.println("Expected parameters: <job class> [<input dir>]+ <output dir>");
 	    System.exit(-1);
-	} else if ("UserMessages".equalsIgnoreCase(otherArgs[0])) {
+	} else if ("CountryVisitorsToPage".equalsIgnoreCase(otherArgs[0])) {
 
-	    MultipleInputs.addInputPath(job, new Path(otherArgs[1]),
-					KeyValueTextInputFormat.class, UserMessages.UserMapper.class );
-	    MultipleInputs.addInputPath(job, new Path(otherArgs[2]),
-					TextInputFormat.class, UserMessages.MessageMapper.class ); 
+//	    MultipleInputs.addInputPath(job, new Path(otherArgs[1]),
+//					KeyValueTextInputFormat.class, UserMessages.LogMapper.class );
+//	    MultipleInputs.addInputPath(job, new Path(otherArgs[2]),
+//					TextInputFormat.class, UserMessages.CountryMapper.class );
 
-	    job.setReducerClass(UserMessages.JoinReducer.class);
+	    job.setReducerClass(RequestCountByCountry.JoinReducer.class);
+		job.setMapperClass(RequestCountByCountry.LogMapper.class);
 
-	    job.setOutputKeyClass(UserMessages.OUTPUT_KEY_CLASS);
-	    job.setOutputValueClass(UserMessages.OUTPUT_VALUE_CLASS);
+	    job.setOutputKeyClass(RequestCountByCountry.OUTPUT_KEY_CLASS);
+	    job.setOutputValueClass(RequestCountByCountry.OUTPUT_VALUE_CLASS);
 	    FileOutputFormat.setOutputPath(job, new Path(otherArgs[3]));
+		FileInputFormat.addInputPath(job, new Path(otherArgs[1]));
 
-	} else if ("WordCount".equalsIgnoreCase(otherArgs[0])) {
-	    job.setReducerClass(WordCount.ReducerImpl.class);
-	    job.setMapperClass(WordCount.MapperImpl.class);
-	    job.setOutputKeyClass(WordCount.OUTPUT_KEY_CLASS);
-	    job.setOutputValueClass(WordCount.OUTPUT_VALUE_CLASS);
+	} else if ("PageRequestCountSortedByCountry".equalsIgnoreCase(otherArgs[0])) {
+	    job.setReducerClass(CountryVisitorsToPage.ReducerImpl.class);
+	    job.setMapperClass(CountryVisitorsToPage.MapperImpl.class);
+	    job.setOutputKeyClass(CountryVisitorsToPage.OUTPUT_KEY_CLASS);
+	    job.setOutputValueClass(CountryVisitorsToPage.OUTPUT_VALUE_CLASS);
 	    FileInputFormat.addInputPath(job, new Path(otherArgs[1]));
 	    FileOutputFormat.setOutputPath(job, new Path(otherArgs[2]));
-	} else if ("AccessLog".equalsIgnoreCase(otherArgs[0])) {
-	    job.setReducerClass(AccessLog.ReducerImpl.class);
-	    job.setMapperClass(AccessLog.MapperImpl.class);
-	    job.setOutputKeyClass(AccessLog.OUTPUT_KEY_CLASS);
-	    job.setOutputValueClass(AccessLog.OUTPUT_VALUE_CLASS);
+	} else if ("CountryVisitorsToPage".equalsIgnoreCase(otherArgs[0])) {
+	    job.setReducerClass(CountryVisitorsToPage.ReducerImpl.class);
+	    job.setMapperClass(CountryVisitorsToPage.MapperImpl.class);
+	    job.setOutputKeyClass(CountryVisitorsToPage.OUTPUT_KEY_CLASS);
+	    job.setOutputValueClass(CountryVisitorsToPage.OUTPUT_VALUE_CLASS);
 	    FileInputFormat.addInputPath(job, new Path(otherArgs[1]));
 	    FileOutputFormat.setOutputPath(job, new Path(otherArgs[2]));
 	} else {
